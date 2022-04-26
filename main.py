@@ -17,12 +17,13 @@ posedet = PoseDetector(detectionCon=0.5)
 
 
 class SnakeGame:
-    def __init__(self):
+    def __init__(self, foodpath):
         self.points = []
         self.distances = []  # distance between each point
-        self.currlenght = 0  # total lenght of snake
-        self.minlenght = 100
+        self.currlength = 0  # total lenght of snake
+        self.allowedlength = 400
         self.prepoint = 0, 0  # previous point
+        self.foodimg = cv2.imread(foodpath, cv2.IMREAD_UNCHANGED)
 
     def update(self, img, newpoint):
         px, py = self.prepoint
@@ -30,14 +31,22 @@ class SnakeGame:
         self.points.append([nx, ny])
         distance = math.hypot(nx - px, ny - py)
         self.distances.append(distance)
-        self.currlenght += distance
+        self.currlength += distance
         self.prepoint = nx, ny
-
+        # length reduction
+        if self.currlength > self.allowedlength:
+            for i, dis in enumerate(self.distances):
+                self.currlength -= self.distances[i]
+                self.distances.pop(i)
+                self.points.pop(i)
+                if self.currlength <= self.allowedlength:
+                    break
         # draw snake
-        for i, point in enumerate(self.points):
-            if i != 0:
-                cv2.line(img, self.points[i-1], self.points[i], (0, 0, 255), 7)
-        cv2.circle(img, pointIndex, 8, (200, 0, 200), cv2.FILLED)
+        if self.points:
+            for i, point in enumerate(self.points):
+                if i != 0:
+                    cv2.line(img, self.points[i-1], self.points[i], (0, 100, 0), 22)
+            cv2.circle(img, pointIndex, 8, (200, 0, 200), cv2.FILLED)
         return img
 
 
@@ -49,7 +58,7 @@ while True:
     hands, img = handdet.findHands(img)
     # img, bboxs = facedetector.findFaces(img)
     # img, bboxs = facemeshdet.findFaceMesh(img)
-    img = posedet.findPose(img, draw=True)
+    # img = posedet.findPose(img, draw=True)
     if hands:
         lmlist = hands[0]['lmList']
         # print(lmlist)
