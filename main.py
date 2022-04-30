@@ -33,14 +33,13 @@ class SnakeGame:
         self.gameover = False
 
     def randomFoodLocation(self):
-        self.foodpoint = random.randint(100, 1000), random.randint(100, 500)
+        self.foodpoint = random.randint(100, 1000), random.randint(100, 700)
 
     def update(self, img, newpoint):
         if self.gameover:
             cvzone.putTextRect(img, "Game Over", [300, 400], scale=7, thickness=3, offset=8,
                                colorT=(255, 255, 200))  # todo color and border
             cvzone.putTextRect(img, f"Your Score: {self.score}", [300, 550], scale=7, thickness=3, offset=7)
-            self.score = 0
         else:
             px, py = self.prepoint
             nx, ny = newpoint
@@ -67,6 +66,7 @@ class SnakeGame:
                 self.allowedlength += 50
                 self.score += 1
 
+            # todo: draw head of snake
             # Draw Snake
             if self.points:
                 for i, point in enumerate(self.points):
@@ -116,3 +116,4 @@ while True:
     key = cv2.waitKey(1)
     if key == ord('r'):
         game.gameover = False
+        game.score = 0
