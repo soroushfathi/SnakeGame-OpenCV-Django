@@ -1,5 +1,5 @@
 # SnakeGame-OpenCV-Django
-a popular snake game with open cv (use webcam & your finger to play game:)
+snake game mini project with OpenCV(cvzone) (use webcam & your finger to play game:)
 ###how to start
 
 ###how to play
@@ -7,4 +7,5 @@ a popular snake game with open cv (use webcam & your finger to play game:)
 <ul>
     <li>opencv</li>
     <li>djnago</li>
+    <li>docker</li>
 </ul>
