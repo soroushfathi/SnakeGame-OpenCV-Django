@@ -13,11 +13,6 @@ from bidi.algorithm import get_display
 import sqlite3
 from utils import game_over, length_reduction
 
-cur = con.cursor()
-
-# Create table
-cur.execute('''CREATE TABLE stocks (date text, trans text, symbol text, qty real, price real)''')
-
 cap = cv2.VideoCapture(0)
 cap.set(3, 1500)
 cap.set(4, 800)
@@ -57,10 +52,10 @@ class SnakeGame:
     def update(self, img, newpoint):
         if self.outofrange and self.gameover:
             img = cvzone.overlayPNG(img, self.gameoverimg2, [100, 100])
-            cvzone.putTextRect(img, f"Your Score: {self.score}", [480, 700], scale=2, thickness=2, offset=7)
+            cvzone.putTextRect(img, f"Your Score: {self.score}, max score: {self.maxscore}", [440, 700], scale=2, thickness=2, offset=7)
         elif self.gameover:
             img = cvzone.overlayPNG(img, self.gameoverimg, [100, 100])
-            cvzone.putTextRect(img, f"Your Score: {self.score}", [480, 700], scale=2, thickness=2, offset=7)
+            cvzone.putTextRect(img, f"Your Score: {self.score}, max score: {self.maxscore}", [440, 700], scale=2, thickness=2, offset=7)
         else:
             px, py = self.prepoint
             nx, ny = newpoint

@@ -1,5 +1,5 @@
 def game_over(self):
-    self.game_over = True
+    self.gameover = True
     self.points = []
     self.distances = []  # distance between each point
     self.currlength = 0  # total lenght of snake
