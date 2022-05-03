@@ -10,10 +10,4 @@ def game_over(self):
 
 
 def length_reduction(self):
-    if self.currlength > self.allowedlength:
-        for i, dis in enumerate(self.distances):
-            self.currlength -= self.distances[i]
-            self.distances.pop(i)
-            self.points.pop(i)
-            if self.currlength <= self.allowedlength:
-                break
+    pass

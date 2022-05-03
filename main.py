@@ -14,8 +14,8 @@ import sqlite3
 from utils import game_over, length_reduction
 
 cap = cv2.VideoCapture(0)
-cap.set(3, 1500)
-cap.set(4, 800)
+cap.set(3, 1600)
+cap.set(4, 900)
 handdet = HandDetector(detectionCon=0.8, maxHands=1)
 facedet = FaceDetector(minDetectionCon=0.5)
 facemeshdet = FaceMeshDetector(minDetectionCon=0.6)
@@ -47,15 +47,15 @@ class SnakeGame:
         self.outofrange = False
 
     def randomFoodLocation(self):
-        self.foodpoint = random.randint(100, 800), random.randint(100, 700)
+        self.foodpoint = random.randint(200, 800), random.randint(200, 700)
 
     def update(self, img, newpoint):
         if self.outofrange and self.gameover:
-            img = cvzone.overlayPNG(img, self.gameoverimg2, [100, 100])
-            cvzone.putTextRect(img, f"Your Score: {self.score}, max score: {self.maxscore}", [440, 700], scale=2, thickness=2, offset=7)
+            # img = cvzone.overlayPNG(img, self.gameoverimg2, [100, 100])
+            cvzone.putTextRect(img, f"Your Score: {self.score}, max score: {self.maxscore}", [400, 700], scale=2, thickness=2, offset=7)
         elif self.gameover:
-            img = cvzone.overlayPNG(img, self.gameoverimg, [100, 100])
-            cvzone.putTextRect(img, f"Your Score: {self.score}, max score: {self.maxscore}", [440, 700], scale=2, thickness=2, offset=7)
+            # img = cvzone.overlayPNG(img, self.gameoverimg, [100, 100])
+            cvzone.putTextRect(img, f"Your Score: {self.score}, max score: {self.maxscore}", [400, 700], scale=2, thickness=2, offset=7)
         else:
             px, py = self.prepoint
             nx, ny = newpoint
@@ -67,7 +67,13 @@ class SnakeGame:
             self.prepoint = nx, ny
 
             # length reduction
-            length_reduction(self)
+            if self.currlength > self.allowedlength:
+                for i, dis in enumerate(self.distances):
+                    self.currlength -= self.distances[i]
+                    self.distances.pop(i)
+                    self.points.pop(i)
+                    if self.currlength <= self.allowedlength:
+                        break
 
             # Check the Snake ate the Food
             rx, ry = self.foodpoint
@@ -97,9 +103,9 @@ class SnakeGame:
             pts = np.array(self.points[:-2], np.int32)
             pts = pts.reshape((-1, 1, 2))
             # TODO line type
-            cv2.polylines(img, [pts], False, (0, 200, 0), 4)
+            cv2.polylines(img, [pts], False, (0, 200, 0), 5)
             mindis = cv2.pointPolygonTest(pts, (nx, ny), True)
-            if -1.001 <= mindis <= 1.001:
+            if -1.01 <= mindis <= 1.01:
                 game_over(self)
 
             cvzone.putTextRect(img, f"Score: {self.score}", [50, 80], scale=2, thickness=3, offset=10)
@@ -116,13 +122,16 @@ while True:
     # img, bboxs = facedetector.findFaces(img)
     # img, bboxs = facemeshdet.findFaceMesh(img)
     # img = posedet.findPose(img, draw=True)
+    fingers = [True]
     if hands:
         lmlist = hands[0]['lmList']
+        hand = hands[0]
+        fingers = handdet.fingersUp(hand)
         # print(lmlist)
         pointIndex = lmlist[8][:2]  # get (x, y) of pointer finger
         img = game.update(img, pointIndex)
     else:
-        pass
+        cvzone.putTextRect(img, "put your hand on screen to continiue", [100, 300], scale=5, thickness=3, offset=10)
         # draw = ImageDraw.Draw(img)
         # text = "برای ادامه بازی دستت رو داخل صفحه قرار بده"
         # reshaped_text = arabic_reshaper.reshape(text)  # correct its shape
@@ -130,7 +139,7 @@ while True:
         # draw.text((450, 700), bidi_text, (255, 2, 2), font=font)
     cv2.imshow('Game', img)
     key = cv2.waitKey(1)
-    if key == ord('r') or key == ord('R'):
+    if key == ord('r') or key == ord('R') or not all(fingers):
         game.gameover = False
         game.outofrange = False
         game.score = 0
