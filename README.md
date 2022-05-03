@@ -6,6 +6,5 @@ snake game mini project with OpenCV(cvzone) (use webcam & your finger to play ga
 ###technologies
 <ul>
     <li>opencv</li>
-    <li>djnago</li>
     <li>docker</li>
 </ul>

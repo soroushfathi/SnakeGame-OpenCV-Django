@@ -10,6 +10,13 @@ from cvzone.PoseModule import PoseDetector
 from PIL import Image, ImageFont, ImageDraw
 import arabic_reshaper
 from bidi.algorithm import get_display
+import sqlite3
+from utils import game_over, length_reduction
+
+cur = con.cursor()
+
+# Create table
+cur.execute('''CREATE TABLE stocks (date text, trans text, symbol text, qty real, price real)''')
 
 cap = cv2.VideoCapture(0)
 cap.set(3, 1500)
@@ -28,6 +35,7 @@ class SnakeGame:
         self.allowedlength = 150
         self.prepoint = 0, 0  # previous point
         self.score = 0
+        self.maxscore = 0
 
         self.font = ImageFont.truetype('statics/Vazirmatn-Black.ttf', 40, encoding='unic')
         self.snakeimg = cv2.imread("statics/snake.png", cv2.IMREAD_UNCHANGED)
@@ -64,13 +72,7 @@ class SnakeGame:
             self.prepoint = nx, ny
 
             # length reduction
-            if self.currlength > self.allowedlength:
-                for i, dis in enumerate(self.distances):
-                    self.currlength -= self.distances[i]
-                    self.distances.pop(i)
-                    self.points.pop(i)
-                    if self.currlength <= self.allowedlength:
-                        break
+            length_reduction(self)
 
             # Check the Snake ate the Food
             rx, ry = self.foodpoint
@@ -88,13 +90,8 @@ class SnakeGame:
             try:
                 img = cvzone.overlayPNG(img, self.snakeimg, (nx - self.hsnake//2, ny - self.wsnake//2))
             except ValueError:
-                self.gameover = True
                 self.outofrange = True
-                self.points = []
-                self.distances = []  # distance between each point
-                self.currlength = 0  # total lenght of snake
-                self.allowedlength = 150
-                self.prepoint = 0, 0  # previous point
+                game_over(self)
 
             # Draw Food
             rx, ry = self.foodpoint
@@ -108,12 +105,7 @@ class SnakeGame:
             cv2.polylines(img, [pts], False, (0, 200, 0), 4)
             mindis = cv2.pointPolygonTest(pts, (nx, ny), True)
             if -1.001 <= mindis <= 1.001:
-                self.gameover = True
-                self.points = []
-                self.distances = []  # distance between each point
-                self.currlength = 0  # total lenght of snake
-                self.allowedlength = 150
-                self.prepoint = 0, 0  # previous point
+                game_over(self)
 
             cvzone.putTextRect(img, f"Score: {self.score}", [50, 80], scale=2, thickness=3, offset=10)
 
