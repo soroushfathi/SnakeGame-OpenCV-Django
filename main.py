@@ -14,8 +14,8 @@ import sqlite3
 from utils import game_over, length_reduction
 
 cap = cv2.VideoCapture(0)
-cap.set(3, 1600)
-cap.set(4, 900)
+cap.set(3, 1280)
+cap.set(4, 720)
 handdet = HandDetector(detectionCon=0.8, maxHands=1)
 facedet = FaceDetector(minDetectionCon=0.5)
 facemeshdet = FaceMeshDetector(minDetectionCon=0.6)
@@ -47,14 +47,14 @@ class SnakeGame:
         self.outofrange = False
 
     def randomFoodLocation(self):
-        self.foodpoint = random.randint(200, 800), random.randint(200, 700)
+        self.foodpoint = random.randint(200, 1000), random.randint(200, 600)
 
     def update(self, img, newpoint):
         if self.outofrange and self.gameover:
-            # img = cvzone.overlayPNG(img, self.gameoverimg2, [100, 100])
+            img = cvzone.overlayPNG(img, self.gameoverimg2, [0, 0])
             cvzone.putTextRect(img, f"Your Score: {self.score}, max score: {self.maxscore}", [400, 700], scale=2, thickness=2, offset=7)
         elif self.gameover:
-            # img = cvzone.overlayPNG(img, self.gameoverimg, [100, 100])
+            img = cvzone.overlayPNG(img, self.gameoverimg, [0, 0])
             cvzone.putTextRect(img, f"Your Score: {self.score}, max score: {self.maxscore}", [400, 700], scale=2, thickness=2, offset=7)
         else:
             px, py = self.prepoint
@@ -92,7 +92,14 @@ class SnakeGame:
                 img = cvzone.overlayPNG(img, self.snakeimg, (nx - self.hsnake//2, ny - self.wsnake//2))
             except ValueError:
                 self.outofrange = True
-                game_over(self)
+                self.gameover = True
+                self.points = []
+                self.distances = []  # distance between each point
+                self.currlength = 0  # total lenght of snake
+                self.allowedlength = 150
+                self.prepoint = 0, 0  # previous point
+                if self.score > self.maxscore:
+                    self.maxscore = self.score
 
             # Draw Food
             rx, ry = self.foodpoint
@@ -106,7 +113,14 @@ class SnakeGame:
             cv2.polylines(img, [pts], False, (0, 200, 0), 5)
             mindis = cv2.pointPolygonTest(pts, (nx, ny), True)
             if -1.01 <= mindis <= 1.01:
-                game_over(self)
+                self.gameover = True
+                self.points = []
+                self.distances = []  # distance between each point
+                self.currlength = 0  # total lenght of snake
+                self.allowedlength = 150
+                self.prepoint = 0, 0  # previous point
+                if self.score > self.maxscore:
+                    self.maxscore = self.score
 
             cvzone.putTextRect(img, f"Score: {self.score}", [50, 80], scale=2, thickness=3, offset=10)
 
@@ -130,8 +144,8 @@ while True:
         # print(lmlist)
         pointIndex = lmlist[8][:2]  # get (x, y) of pointer finger
         img = game.update(img, pointIndex)
-    else:
-        cvzone.putTextRect(img, "put your hand on screen to continiue", [100, 300], scale=5, thickness=3, offset=10)
+    # else:
+    #     cvzone.putTextRect(img, "put your hand on screen to continiue", [50, 300], scale=4, thickness=3, offset=10)
         # draw = ImageDraw.Draw(img)
         # text = "برای ادامه بازی دستت رو داخل صفحه قرار بده"
         # reshaped_text = arabic_reshaper.reshape(text)  # correct its shape
