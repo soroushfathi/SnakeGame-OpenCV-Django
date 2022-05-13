@@ -4,3 +4,4 @@ opencv-python
 numpy
 python-bidi
 arabic-reshaper
+screeninfo==0.8
