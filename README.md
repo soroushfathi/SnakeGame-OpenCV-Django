@@ -1,10 +1,11 @@
 # SnakeGame-OpenCV-Django
-snake game mini project with OpenCV(cvzone) (use webcam & your finger to play game:)
-###how to start
+snake game mini project with OpenCV(use webcam & your finger to play game:)
+### how to start
 
-###how to play
-###technologies
+### how to play
+
+### technologies
 <ul>
-    <li>opencv</li>
+    <li>OpenCV(+ cvzone)</li>
     <li>docker</li>
 </ul>

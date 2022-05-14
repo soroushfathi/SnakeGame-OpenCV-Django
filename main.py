@@ -3,6 +3,7 @@ import random
 import cvzone
 import cv2
 import numpy as np
+from screeninfo import get_monitors
 from cvzone.HandTrackingModule import HandDetector
 from cvzone.FaceDetectionModule import FaceDetector
 from cvzone.FaceMeshModule import FaceMeshDetector
@@ -14,8 +15,12 @@ import sqlite3
 from utils import game_over, length_reduction
 
 cap = cv2.VideoCapture(0)
-cap.set(3, 1280)
-cap.set(4, 720)
+
+# Get width and height of monitor automatically
+screen = get_monitors() .pop()
+
+cap.set(3, screen.width)
+cap.set(4, screen.height)
 handdet = HandDetector(detectionCon=0.8, maxHands=1)
 facedet = FaceDetector(minDetectionCon=0.5)
 facemeshdet = FaceMeshDetector(minDetectionCon=0.6)
