@@ -96,7 +96,7 @@ class SnakeGame:
                 for i, point in enumerate(self.points):
                     if i != 0:
                         cv2.line(img, self.points[i - 1], self.points[i], (0, 100, 0), 22)
-                cv2.circle(img, pointIndex, 8, (200, 0, 200), cv2.FILLED)
+                cv2.circle(img, newpoint, 8, (200, 0, 200), cv2.FILLED)
             try:
                 img = cvzone.overlayPNG(img, self.snakeimg, (nx - self.hsnake // 2, ny - self.wsnake // 2))
             except ValueError:
