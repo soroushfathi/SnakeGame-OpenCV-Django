@@ -1,0 +1,16 @@
+{%extends 'base.html'%}
+{%load crispy_forms_tags%}
+{%block title%}
+    sign up
+{%endblock%}
+{%block body_block%}
+{%if signed_up%}
+<div class="alert alert-success"> you signed up successfully </div>
+{%else%}
+    <form method="POST">
+        {{form|crispy}}
+        {%csrf_token%}
+        <input type="submit" class="btn btn-primary btn-sm" value="submit">
+    </form>
+{%endif%}
+{%endblock%}
