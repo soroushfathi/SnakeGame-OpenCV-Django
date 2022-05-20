@@ -15,9 +15,9 @@ import os
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-TEMPLATES_DIR = os.path.join(BASE_DIR,'templates')
-STATIC_DIR = os.path.join(BASE_DIR,'statics')
-MEDIA_DIR = os.path.join(BASE_DIR,'media')
+TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
+STATIC_DIR = os.path.join(BASE_DIR, 'statics')
+MEDIA_DIR = os.path.join(BASE_DIR, 'media')
 
 
 SECRET_KEY = 'django-insecure-o7f9)33py_l+z_na3osqk#1hoac@6#_6&k(=n=j5i$^egb-cp6'
@@ -84,14 +84,21 @@ WSGI_APPLICATION = 'snakesite.wsgi.application'
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'snake_game_database',
+#         'USER': 'root',
+#         'PASSWORD': '',  
+#         'HOST': '127.0.0.1',
+#         'PORT': '3306',
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'snake_game_database',
-        'USER': 'root',
-        'PASSWORD': '',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 

@@ -12,7 +12,7 @@ from cvzone.PoseModule import PoseDetector
 from django.http import StreamingHttpResponse
 from django.views.decorators import gzip
 from PIL import Image, ImageFont, ImageDraw
-from models import record
+from .models import record
 
 
 class SnakeGame:
