@@ -1,14 +1,14 @@
 # SnakeGame-OpenCV-Django
-snake game mini project with OpenCV(use webcam & your finger to play game:)
+snake game mini project with OpenCV(access webcam & your finger to play game:)
 ### how to start
-
+soon....
 ### how to play
-
+soon...
 ### technologies
 <ul>
-    <li>OpenCV(+ cvzone)</li>
+    <li>OpenCV</li>
+    <li>cvzone</li>
+    <li>django</li>
     <li>docker</li>
 </ul>
 
-now lets try to luanch the game on a web site.
-the web site will be created using django 
