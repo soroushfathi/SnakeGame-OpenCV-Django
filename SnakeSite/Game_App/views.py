@@ -1,3 +1,4 @@
+from django.shortcuts import render
 import math
 import random
 import cvzone
@@ -8,23 +9,10 @@ from cvzone.HandTrackingModule import HandDetector
 from cvzone.FaceDetectionModule import FaceDetector
 from cvzone.FaceMeshModule import FaceMeshDetector
 from cvzone.PoseModule import PoseDetector
+from django.http import StreamingHttpResponse
+from django.views.decorators import gzip
 from PIL import Image, ImageFont, ImageDraw
-import arabic_reshaper
-from bidi.algorithm import get_display
-import sqlite3
-from utils import game_over, length_reduction
-
-cap = cv2.VideoCapture(0)
-
-# Get width and height of monitor automatically
-screen = get_monitors() .pop()
-
-cap.set(3, screen.width)
-cap.set(4, screen.height)
-handdet = HandDetector(detectionCon=0.8, maxHands=1)
-facedet = FaceDetector(minDetectionCon=0.5)
-facemeshdet = FaceMeshDetector(minDetectionCon=0.6)
-posedet = PoseDetector(detectionCon=0.5)
+from models import record
 
 
 class SnakeGame:
@@ -44,8 +32,6 @@ class SnakeGame:
         self.hgameoverimg, self.wgameoverimg, _ = self.gameoverimg.shape
         self.gameoverimg2 = cv2.imread("statics/gameover2.png", cv2.IMREAD_UNCHANGED)
         self.hgameoverimg2, self.wgameoverimg2, _ = self.gameoverimg2.shape
-        self.warningimg = cv2.imread("statics/warning1.png")
-        self.hwarnimg2, self.wwarnimg2, _ = self.warningimg.shape
         self.foodimg = cv2.imread(foodpath, cv2.IMREAD_UNCHANGED)
         self.hfood, self.wfood, _ = self.foodimg.shape
         self.foodpoint = 0, 0
@@ -113,9 +99,7 @@ class SnakeGame:
             # Draw Food
             rx, ry = self.foodpoint
             img = cvzone.overlayPNG(img, self.foodimg, (rx - self.wfood // 2, ry - self.hfood // 2))
-            # cv2.rectangle(img, (rx - self.wfood // 2, ry - self.hfood // 2), (rx + self.wfood // 2, ry + self.hfood // 2), (0, 100, 50), 2)
 
-            # Check for conclution
             pts = np.array(self.points[:-2], np.int32)
             pts = pts.reshape((-1, 1, 2))
             # TODO line type
@@ -136,36 +120,45 @@ class SnakeGame:
         return img
 
 
-game = SnakeGame("statics/apple.png")
+def gen(cap,game,handdet):
+    while True:
+        success, img = cap.read()
+        img = cv2.flip(img, 1)
+        hands, img = handdet.findHands(img)
 
-while True:
-    success, img = cap.read()
-    img = cv2.flip(img, 1)
-    hands, img = handdet.findHands(img)
-    # img, bboxs = facedet.findFaces(img)
-    # img, bboxs = facemeshdet.findFaceMesh(img)
-    # img = posedet.findPose(img,  draw=True)
-    fingers = [True]
-    if hands:
-        lmlist = hands[0]['lmList']
-        hand = hands[0]
-        fingers = handdet.fingersUp(hand)
-        # print(lmlist)
-        pointIndex = lmlist[8][:2]  # get (x, y) of pointer finger
-        img = game.update(img, pointIndex)
-    else:
+        fingers = [True]
+        if hands:
+            lmlist = hands[0]['lmList']
+            hand = hands[0]
+            fingers = handdet.fingersUp(hand)
+
+            pointIndex = lmlist[8][:2]  # get (x, y) of pointer finger
+            img = game.update(img, pointIndex)
+        key = cv2.waitKey(1)
+        if key == ord('r') or key == ord('R') or not all(fingers):
+            game.gameover = False
+            game.outofrange = False
+            game.score = 0
+        _, jpeg = cv2.imencode('.jpg', img)
+        yield b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + jpeg.tobytes() + b'\r\n\r\n'
+
+@gzip.gzip_page
+def play(request):
+    game = SnakeGame("statics/apple.png")
+    try:
+        cap = cv2.VideoCapture(0)
+        screen = get_monitors().pop()
+        cap.set(3, screen.width)
+        cap.set(4, screen.height)
+        handdet = HandDetector(detectionCon=0.8, maxHands=1)
+        facedet = FaceDetector(minDetectionCon=0.5)
+        facemeshdet = FaceMeshDetector(minDetectionCon=0.6)
+        posedet = PoseDetector(detectionCon=0.5)
+        return StreamingHttpResponse(gen(cap,game,handdet), content_type="multipart/x-mixed-replace;boundary=frame")
+    except:
         pass
-        # img = cvzone.overlayPNG(img, game.warningimg, [0, 0])
-        # todo: persian font
-        # cvzone.putTextRect(img, "put your hand on screen to continiue", [50, 300], scale=4, thickness=3, offset=10)
-        # draw = ImageDraw.Draw(img)
-        # text = "برای ادامه بازی دستت رو داخل صفحه قرار بده"
-        # reshaped_text = arabic_reshaper.reshape(text)  # correct its shape
-        # bidi_text = get_display(reshaped_text)  # correct its direction
-        # draw.text((450, 700), bidi_text, (255, 2, 2), font=font)
-    cv2.imshow('Game', img)
-    key = cv2.waitKey(1)
-    if key == ord('r') or key == ord('R') or not all(fingers):
-        game.gameover = False
-        game.outofrange = False
-        game.score = 0
+    new_record = record()
+    return render(request,'game/game_page.html',context={'game_over':True})
+
+
+

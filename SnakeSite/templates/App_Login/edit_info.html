@@ -1,0 +1,13 @@
+{%extends 'base.html'%}
+{%load crispy_forms_tags%}
+{%block title%}
+    edit information
+{%endblock%}
+{%block body_block%}
+    <form method="POST">
+        {{form|crispy}}
+        {%csrf_token%}
+        <input type="submit" class="btn btn-primary btn-sm" value="submit">
+    </form>
+<p> to change pass click<a href="{%url 'App_Login:change_pass'%}">here</a></p>
+{%endblock%}

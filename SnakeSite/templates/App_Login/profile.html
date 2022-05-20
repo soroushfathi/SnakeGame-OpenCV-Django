@@ -1,0 +1,35 @@
+{%extends 'base.html'%}
+{%block title%}
+    profile
+{%endblock%}
+{%block body_block%}
+    <div class="row">
+        <div class="col-sm-8">
+            {%if user.game_user%}
+                 <img src="/media/{{user.game_user.profile_pic}}" class="rounded-circle" width="25%">
+                 <p>
+                     {{user.game_user.description}}
+                 </p>
+                <a href="{%url 'App_Login:change_profile'%}"  class="btn btn-primary btn-sm"> change profile </a>
+            {%else%}
+                 <img src="/media/luffy.jfif" class="rounded-circle"  width="25%">
+                 <div>
+                     <br/>
+                     ...
+                     you better pull some description 😅
+                     ...
+                     <br/>
+                 </div>
+            <br/>
+                <a href="{%url 'App_Login:add_profile'%}" class="btn btn-primary btn-sm"> add profile </a>
+            {%endif%}
+        </div>
+        <div class="col-sm-4">
+            <p>you entered as:</p>
+            <p>
+                {{user.username}}<br/>
+            </p>
+            <a href="{%url 'App_Login:edit_info'%}" class="btn btn-primary btn-sm"> edit info </a>
+        </div>
+    </div>
+{%endblock%}
