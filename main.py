@@ -44,6 +44,8 @@ class SnakeGame:
         self.hgameoverimg, self.wgameoverimg, _ = self.gameoverimg.shape
         self.gameoverimg2 = cv2.imread("statics/gameover2.png", cv2.IMREAD_UNCHANGED)
         self.hgameoverimg2, self.wgameoverimg2, _ = self.gameoverimg2.shape
+        self.warningimg = cv2.imread("statics/warning1.png")
+        self.hwarnimg2, self.wwarnimg2, _ = self.warningimg.shape
         self.foodimg = cv2.imread(foodpath, cv2.IMREAD_UNCHANGED)
         self.hfood, self.wfood, _ = self.foodimg.shape
         self.foodpoint = 0, 0
@@ -57,10 +59,12 @@ class SnakeGame:
     def update(self, img, newpoint):
         if self.outofrange and self.gameover:
             img = cvzone.overlayPNG(img, self.gameoverimg2, [0, 0])
-            cvzone.putTextRect(img, f"Your Score: {self.score}, max score: {self.maxscore}", [400, 700], scale=2, thickness=2, offset=7)
+            cvzone.putTextRect(img, f"Your Score: {self.score}, max score: {self.maxscore}", [400, 700], scale=2,
+                               thickness=2, offset=7)
         elif self.gameover:
             img = cvzone.overlayPNG(img, self.gameoverimg, [0, 0])
-            cvzone.putTextRect(img, f"Your Score: {self.score}, max score: {self.maxscore}", [400, 700], scale=2, thickness=2, offset=7)
+            cvzone.putTextRect(img, f"Your Score: {self.score}, max score: {self.maxscore}", [400, 700], scale=2,
+                               thickness=2, offset=7)
         else:
             px, py = self.prepoint
             nx, ny = newpoint
@@ -82,7 +86,7 @@ class SnakeGame:
 
             # Check the Snake ate the Food
             rx, ry = self.foodpoint
-            if rx - self.wfood//2 < nx < rx + self.wfood//2 and ry - self.hfood//2 < ny < ry + self.hfood//2:
+            if rx - self.wfood // 2 < nx < rx + self.wfood // 2 and ry - self.hfood // 2 < ny < ry + self.hfood // 2:
                 self.randomFoodLocation()
                 self.allowedlength += 50
                 self.score += 1
@@ -91,10 +95,10 @@ class SnakeGame:
             if self.points:
                 for i, point in enumerate(self.points):
                     if i != 0:
-                        cv2.line(img, self.points[i-1], self.points[i], (0, 100, 0), 22)
-                cv2.circle(img, pointIndex, 8, (200, 0, 200), cv2.FILLED)
+                        cv2.line(img, self.points[i - 1], self.points[i], (0, 100, 0), 22)
+                cv2.circle(img, newpoint, 8, (200, 0, 200), cv2.FILLED)
             try:
-                img = cvzone.overlayPNG(img, self.snakeimg, (nx - self.hsnake//2, ny - self.wsnake//2))
+                img = cvzone.overlayPNG(img, self.snakeimg, (nx - self.hsnake // 2, ny - self.wsnake // 2))
             except ValueError:
                 self.outofrange = True
                 self.gameover = True
@@ -108,7 +112,7 @@ class SnakeGame:
 
             # Draw Food
             rx, ry = self.foodpoint
-            img = cvzone.overlayPNG(img, self.foodimg, (rx - self.wfood//2, ry - self.hfood//2))
+            img = cvzone.overlayPNG(img, self.foodimg, (rx - self.wfood // 2, ry - self.hfood // 2))
             # cv2.rectangle(img, (rx - self.wfood // 2, ry - self.hfood // 2), (rx + self.wfood // 2, ry + self.hfood // 2), (0, 100, 50), 2)
 
             # Check for conclution
@@ -138,9 +142,9 @@ while True:
     success, img = cap.read()
     img = cv2.flip(img, 1)
     hands, img = handdet.findHands(img)
-    # img, bboxs = facedetector.findFaces(img)
+    # img, bboxs = facedet.findFaces(img)
     # img, bboxs = facemeshdet.findFaceMesh(img)
-    # img = posedet.findPose(img, draw=True)
+    # img = posedet.findPose(img,  draw=True)
     fingers = [True]
     if hands:
         lmlist = hands[0]['lmList']
@@ -149,8 +153,11 @@ while True:
         # print(lmlist)
         pointIndex = lmlist[8][:2]  # get (x, y) of pointer finger
         img = game.update(img, pointIndex)
-    # else:
-    #     cvzone.putTextRect(img, "put your hand on screen to continiue", [50, 300], scale=4, thickness=3, offset=10)
+    else:
+        pass
+        # img = cvzone.overlayPNG(img, game.warningimg, [0, 0])
+        # todo: persian font
+        # cvzone.putTextRect(img, "put your hand on screen to continiue", [50, 300], scale=4, thickness=3, offset=10)
         # draw = ImageDraw.Draw(img)
         # text = "برای ادامه بازی دستت رو داخل صفحه قرار بده"
         # reshaped_text = arabic_reshaper.reshape(text)  # correct its shape
