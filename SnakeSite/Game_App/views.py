@@ -12,7 +12,7 @@ from cvzone.PoseModule import PoseDetector
 from django.http import StreamingHttpResponse
 from django.views.decorators import gzip
 from PIL import Image, ImageFont, ImageDraw
-from models import record
+from .models import record
 
 
 class SnakeGame:
@@ -120,7 +120,7 @@ class SnakeGame:
         return img
 
 
-def gen(cap,game,handdet):
+def gen(request,cap,game,handdet):
     while True:
         success, img = cap.read()
         img = cv2.flip(img, 1)
@@ -136,6 +136,8 @@ def gen(cap,game,handdet):
             img = game.update(img, pointIndex)
         key = cv2.waitKey(1)
         if key == ord('r') or key == ord('R') or not all(fingers):
+            new_record = record(user=request.user, record=game.score)
+            new_record.save()
             game.gameover = False
             game.outofrange = False
             game.score = 0
@@ -154,11 +156,16 @@ def play(request):
         facedet = FaceDetector(minDetectionCon=0.5)
         facemeshdet = FaceMeshDetector(minDetectionCon=0.6)
         posedet = PoseDetector(detectionCon=0.5)
-        return StreamingHttpResponse(gen(cap,game,handdet), content_type="multipart/x-mixed-replace;boundary=frame")
+        return StreamingHttpResponse(gen(request,cap,game,handdet), content_type="multipart/x-mixed-replace;boundary=frame")
+    
     except:
         pass
-    new_record = record()
-    return render(request,'game/game_page.html',context={'game_over':True})
+
+def game_page(request):
+    return render(request,'game/game_page.html',context={})
+
+def game_event(request):
+    return render(request, 'game/game.html', context={})
 
 
 
