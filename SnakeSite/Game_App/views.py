@@ -120,7 +120,7 @@ class SnakeGame:
         return img
 
 
-def gen(request,cap,game,handdet):
+def gen(request, cap, game, handdet):
     while True:
         success, img = cap.read()
         img = cv2.flip(img, 1)
@@ -159,15 +159,11 @@ def play(request):
         # posedet = PoseDetector(detectionCon=0.5)
         return StreamingHttpResponse(gen(cap, game, handdet), content_type="multipart/x-mixed-replace;boundary=frame")
     except:
-        pass
-        # facedet = FaceDetector(minDetectionCon=0.5)
-        # facemeshdet = FaceMeshDetector(minDetectionCon=0.6)
-        # posedet = PoseDetector(detectionCon=0.5)
-        return StreamingHttpResponse(gen(request,cap,game,handdet), content_type="multipart/x-mixed-replace;boundary=frame")
+        return StreamingHttpResponse(gen(request, cap, game, handdet), content_type="multipart/x-mixed-replace;boundary=frame")
 
 
 def game_page(request):
-    return render(request,'game/game_page.html',context={})
+    return render(request, 'game/game_page.html', context={})
 
 
 def game_event(request):
