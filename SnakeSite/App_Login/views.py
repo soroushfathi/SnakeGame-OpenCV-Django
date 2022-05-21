@@ -4,13 +4,17 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import AuthenticationForm,PasswordChangeForm
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
+from Game_App.models import record
 
 
 # Create your views here.
 
 
 def home(request):
-    return render(request, 'App_Login/home.html', context={})
+    records = record.objects.filter()
+    if len(records) > 10:
+        records = record.objects.all()[:10]
+    return render(request, 'App_Login/home.html', context={'records':records})
 
 
 def sign_up(request):

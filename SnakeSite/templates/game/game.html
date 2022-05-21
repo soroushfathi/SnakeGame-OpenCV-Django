@@ -1,0 +1,22 @@
+{%extends 'base.html'%}
+{%block title%}
+    playing
+{%endblock%}
+{%block body_block%}
+    <div class="row">
+        <div class="col-sm-6">
+            <img src="/media/game_img/6.png" class="rounded-circle">
+        </div>
+        <div class="col-sm-4">
+        <br/>
+        <br/>
+            <p>the game rules are as we remember from childhood,<br/>
+                try to eat apples while being cautious about eating your tail😏😏<br/>
+                🐍🐍to play again just Fist your hand
+            </p>
+        <br/>
+        <br/>
+        <a href="{%url 'Game_App:game_page'%}" class="btn btn-success">play!</a>
+        </div>
+    </div>
+{%endblock%}
