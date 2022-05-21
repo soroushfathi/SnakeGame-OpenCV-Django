@@ -1,0 +1,10 @@
+Django
+mediapipe
+Pillow
+opencv
+cvzone
+numpy
+screeninfo==0.8
+django-crispy-forms
+django_cleanup
+PyMySQL
