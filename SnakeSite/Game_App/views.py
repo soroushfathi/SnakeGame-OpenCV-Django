@@ -120,7 +120,7 @@ class SnakeGame:
         return img
 
 
-def gen(cap,game,handdet):
+def gen(cap, game, handdet):
     while True:
         success, img = cap.read()
         img = cv2.flip(img, 1)
@@ -142,6 +142,7 @@ def gen(cap,game,handdet):
         _, jpeg = cv2.imencode('.jpg', img)
         yield b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + jpeg.tobytes() + b'\r\n\r\n'
 
+
 @gzip.gzip_page
 def play(request):
     game = SnakeGame("statics/apple.png")
@@ -151,14 +152,11 @@ def play(request):
         cap.set(3, screen.width)
         cap.set(4, screen.height)
         handdet = HandDetector(detectionCon=0.8, maxHands=1)
-        facedet = FaceDetector(minDetectionCon=0.5)
-        facemeshdet = FaceMeshDetector(minDetectionCon=0.6)
-        posedet = PoseDetector(detectionCon=0.5)
-        return StreamingHttpResponse(gen(cap,game,handdet), content_type="multipart/x-mixed-replace;boundary=frame")
+        # facedet = FaceDetector(minDetectionCon=0.5)
+        # facemeshdet = FaceMeshDetector(minDetectionCon=0.6)
+        # posedet = PoseDetector(detectionCon=0.5)
+        return StreamingHttpResponse(gen(cap, game, handdet), content_type="multipart/x-mixed-replace;boundary=frame")
     except:
         pass
     new_record = record()
-    return render(request,'game/game_page.html',context={'game_over':True})
-
-
-
+    return render(request, 'game/game_page.html', context={'game_over': True})
