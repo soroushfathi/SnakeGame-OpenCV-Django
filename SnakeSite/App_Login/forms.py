@@ -3,6 +3,7 @@ from django.contrib.auth.forms import UserCreationForm,UserChangeForm,PasswordCh
 from django.contrib.auth.models import User
 from .models import gameUser
 
+
 class Sign_Up_Form(UserCreationForm):
     email = forms.EmailField(required=True)
 
@@ -16,14 +17,10 @@ class edit_info(UserChangeForm):
 
     class Meta:
         model = User
-        fields = ['username','email','first_name','last_name']
+        fields = ['username', 'email', 'first_name', 'last_name']
+
 
 class change_description_pic(forms.ModelForm):
     class Meta:
         model = gameUser
-        fields = ['description','profile_pic']
-
-
-
-
-
+        fields = ['description', 'profile_pic']
