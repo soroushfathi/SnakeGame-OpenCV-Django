@@ -1,6 +1,6 @@
 # SnakeGame-OpenCV-Django
 snake game mini project with OpenCV(access webcam & your finger to play game:)
-### how to start
+### Installation
 soon....
 ### how to play
 soon...
